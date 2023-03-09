@@ -4,20 +4,20 @@ import psutil
 import time
 
 # NUSTATYTI PROGRAMOS NAUDOJAMU RESURSU LIMTUS
-kompiliavimoLaikoLimitas = 10 # SEKUNDES
 paleidimoLaikoLimitas = 1 # SEKUNDES
 atmintiesLimitas = 64 * 1024 * 1024 # BAITAI (64MB)
 
 # PAKOMPILIUOTI PROGRAMA SU NUSTATYTAIS LIMITAIS
 try:
-    # PIRMIAUSIA PALEISTI SU ILGESNIUS LAIKU, DEL INFINITE LOOP'U
+    jauBuvoErroras = False  # SEKTI AR JAU BUVO SURASTAS KAZKOKS ERROR'AS
+
     process = subprocess.run(["g++", "programa.cpp"],
                               check = True,
-                              timeout = kompiliavimoLaikoLimitas * 2,
+                              timeout = paleidimoLaikoLimitas,
                               stdout = subprocess.PIPE,
                               stderr = subprocess.PIPE)
     
-    # PALEISTI JAU PAKOMPILIUOTA PROGRAMA IR GAUTI REZULTATUS SU TRUMPESNIU LAIKU
+    # PALEISTI JAU PAKOMPILIUOTA PROGRAMA IR GAUTI REZULTATUS
     if process.returncode == 0:
         # PALEISTI PROGRAMA ATSKIRAME PROCESE
         process = subprocess.Popen(["./a.out"],
@@ -38,6 +38,7 @@ try:
             if praejasLaikas > paleidimoLaikoLimitas:
                 process.kill()
                 print("Programa viršijo laiko limitą")
+                jauBuvoErroras = True  # Error'as buvo, nebespausdinti "Nera rezultatu failo"
                 break
 
             # PATIKRINTI AR PROGRAMA VIRSIJO ATMINTIES LIMITA
@@ -45,24 +46,25 @@ try:
             if sunaudotaAtmintis > atmintiesLimitas:
                 process.kill()
                 print("Programa viršijo atminties limitą")
+                jauBuvoErroras = True  # Error'as buvo, nebespausdinti "Nera rezultatu failo"
                 break
 
         # KAI PROGRAMA BAIGE, GAUTI REZULTATUS
         rezultatai = process.stdout.read().decode().strip()
         if rezultatai:
             print(f"Rezultatai:\n{rezultatai}")
-        else:
+        elif not jauBuvoErroras:  # Nei error'u, nei outputo nebuvo, spausdinti "Nera rezultatu failo"
             print("Nėra rezultatų failo")
     else:
         # SPAUSDINTI KOMPILIACIJOS ERROR'US
         print(f"Klaida:\n{process.stderr.decode().strip()}")
+        jauBuvoErroras = True  # Error'as buvo, nebespausdinti "Nera rezultatu failo"
 
 except subprocess.TimeoutExpired as e:
     # SPAUSDINTI LAIKO VIRSIJIMO ERROR'A
     print(e)
+
 except subprocess.CalledProcessError as e:
-    # SPAUSDINTI KOMPILIACIJOS AR PROGRAMOS ERROR'A
+    # SPAUSDINTI KOMPILIACIJOS ERROR'US
     print(f"Klaida:\n{e.stderr.decode().strip()}")
-except Exception as e:
-    # JEIGU KAZKOKIO KITOS KLAIDOS
-    print(f"Klaida: {e}")
+    jauBuvoErroras = True  # Error'as buvo, nebespausdinti "Nera rezultatu failo"
