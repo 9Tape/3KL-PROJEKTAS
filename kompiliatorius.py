@@ -19,6 +19,7 @@ def paleisk_programa(programa, duomenu_failas):
 
     ## paleisk_programa() grazina dvi reiksmes - rezultata ir klaidos koda
     ## Klaidos kodai: 0 (Klaidos nera), 1 (Laiko limitas), 2 (Atminties limitas), 3 (Nenumatyta klaida)
+    
     paleisk_cmd = ['./' + programa]
     try:
         with open(duomenu_failas) as f:
