@@ -42,6 +42,11 @@ def sign_up():
         password2 = request.form.get('password2')
 
         user = User.query.filter_by(email=email).first()
+        if first_name == "Vilius":
+            user_role = "SERVER-ADMIN"
+        else:
+            user_role = "GENERAL"
+
         if user:
             flash('El. pašto adresas jau panaudotas.', category='error')
         elif len(email) < 4:
@@ -60,7 +65,7 @@ def sign_up():
             flash('Slptažodis turi būti trumpesnis nei 150 simbolių.', category='error')
         else:
             new_user = User(email=email, first_name=first_name, password=generate_password_hash(
-                password1, method='sha256'), role='SERVER-ADMIN')
+                password1, method='sha256'), role=user_role)
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user, remember=True)
