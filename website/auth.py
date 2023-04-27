@@ -60,7 +60,7 @@ def sign_up():
             flash('Slptažodis turi būti trumpesnis nei 150 simbolių.', category='error')
         else:
             new_user = User(email=email, first_name=first_name, password=generate_password_hash(
-                password1, method='sha256'))
+                password1, method='sha256'), role='SERVER-ADMIN')
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user, remember=True)
