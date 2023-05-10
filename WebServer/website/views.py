@@ -102,6 +102,18 @@ def new_task():
             new_problem = Problems(name=taskName, timeLimit=timeLimit, memoryLimit=memoryLimit)
             db.session.add(new_problem)
             db.session.commit()
+            
+            pdfName = str(new_problem.id) + '.pdf'
+            request.files.get('PDF').save('/home/mozzy/Desktop/Lyra/3KL-PROJEKTAS/PROJEKTAS/Server/PDF_Salygos/' + pdfName)
+
+            tests_files = request.files.getlist("tests") 
+            savePath = '/home/mozzy/Desktop/Lyra/3KL-PROJEKTAS/PROJEKTAS/Server/Testai/'
+            folderName = str(new_problem.id)
+            os.makedirs(os.path.join(savePath, folderName))
+            for test_file in tests_files:
+                test_file.save(os.path.join(savePath, folderName, test_file.filename))
+
+            
             flash('Naujas uždavinys sukurtas sėkmingai!', category='success')
             return redirect(url_for('views.home'))
 
