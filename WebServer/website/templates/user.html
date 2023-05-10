@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ user.first_name }}{% endblock %}
+{% block content %}
+<br/>
+<table class="table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Vardas</th>
+      <th>El. paštas</th>
+      <th>Rolė</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for user in user_list %}
+    <tr>
+      <td>{{ user.id }}</td>
+      <td><a href="/problem/{{ user.id }}">{{ user.first_name }}</a></td>
+      <td>{{ user.email }}</td>
+      <td>{{ user.urole }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<br/>
+{% endblock %}
