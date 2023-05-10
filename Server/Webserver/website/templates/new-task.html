@@ -2,7 +2,7 @@
 {% block title %}Naujas uždavinys{% endblock %}
 {% block content %}
 
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
     <br/>
     <h3 align="center">Naujas uždavinys</h3>
     <div class="form-group">
@@ -50,8 +50,8 @@
         <br/>
         <input
         type="file"
-        id="test"
-        name="test"
+        id="tests"
+        name="tests"
         multiple
         accept=".in, .sol"
         />
